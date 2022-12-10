@@ -1,0 +1,4 @@
+flask
+Flask-RESTful
+cx-Oracle
+flask_cors
