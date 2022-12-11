@@ -15,11 +15,11 @@
     <div>
         <form action="/create_flight" method="POST" name="new_flight">
             <div>
-                <label for="aeroline">Aerolinia:</label>
-                <select name="aeroline" id="airline">
+                <label for="airline">Aerolinia:</label>
+                <select name="airline" id="airline">
                     <option value="" disabled selected>Seleccione aerolinia</option>
-                    {%for aeroline in aerolines%}
-                    <option value="{{aeroline.0}}">{{aeroline.2}}</option>
+                    {%for airline in airlines%}
+                    <option value="{{airline.0}}">{{airline.2}}</option>
                     {%endfor%}
                 </select>
             </div>
@@ -94,7 +94,7 @@
                     //segments.innerHTML+="<h1>puto</h1>"
                     option = document.createElement('option')
                     option.value = pilots_for_airline[index][0]
-                    option.textContent = pilots_for_airline[index][0]
+                    option.textContent = pilots_for_airline[index][1]
                     pilots.appendChild(option);
                 }
             });
