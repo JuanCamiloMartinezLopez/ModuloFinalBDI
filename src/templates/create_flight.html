@@ -36,7 +36,16 @@
                     placeholder="Numero de segmentos">
             </div>
             <div id="segments" name="segments">
+                <div name="Aeropuerto 1">
+                    <label for="airport_1" >Aeropuerto 1</label>
+                    <select name="airport_1" id="">
+                        {%for airport in airports%}
+                            <option value="{{airport.0}}">{{airport.2}}</option>
+                        {%endfor%}
+                    </select>
+                </div>
             </div>
+           
             <button type="submit">enviar</button>
         </form>
     </div>
@@ -52,6 +61,8 @@
 
     airline.addEventListener('change', select_airline)
     num_segment.addEventListener('input', change_num_segments)
+   
+
     var num_segm;
     var airports;
     var pilots_for_airline;

@@ -12,10 +12,146 @@
 
 <body>
     <h1>Vuelo {{flight_code}}</h1>
-    
+
+    {% if connection %}
+
+    {% else %}
+    <div>
+        <input type="checkbox" name="check_conexion" id="check_conexion">
+        <form action="" method="post">
+            <div id="div_conexion" style="display: none;">
+                <div name="vueloinicial">
+                    <select name="airline_vueloinicial" id="airline_vueloinicial">
+                        <option value="" disabled selected>Seleccione aerolinia</option>
+                        {%for airline in airlines%}
+                        <option value="{{airline.0}}">{{airline.2}}</option>
+                        {%endfor%}
+                    </select>
+                    <select name="flight_vueloinicial" id="flight_vueloinicial">
+                        <option value="" disabled selected>Seleccione vuelo</option>
+                    </select>
+                    <select name="airport_vueloinicial" id="airport_vueloinicial">
+                        <option value="" disabled selected>Seleccione aeropuerto</option>
+                    </select>
+                </div>
+                <div name="vuelofinal">
+                    <select name="airline_vuelofinal" id="airline_vuelofinal">
+                        <option value="" disabled selected>Seleccione aerolinia</option>
+                        {%for airline in airlines%}
+                        <option value="{{airline.0}}">{{airline.2}}</option>
+                        {%endfor%}
+                    </select>
+                    <select name="flight_vuelofinal" id="flight_vuelofinal">
+                        <option value="" disabled selected>Seleccione vuelo</option>
+                    </select>
+                    <select name="airport_vuelofinal" id="airport_vuelofinal">
+                        <option value="" disabled selected>Seleccione aeropuerto</option>
+                    </select>
+                </div>
+            </div>
+        </form>
+    </div>
+    {% endif %}
 </body>
 
 <script>
-    
+    check_conexion = document.getElementById('check_conexion')
+    div_conexion = document.getElementById('div_conexion')
+    aerolinia_inicial = document.getElementById('airline_vueloinicial');
+    aerolinia_final = document.getElementById('airline_vuelofinal');
+    vuelo_inicial = document.getElementById('flight_vueloinicial')
+    vuelo_final = document.getElementById('flight_vuelofinal')
+    aeropuerto_inicial = document.getElementById('airport_vueloinicial');
+    aeropuerto_final = document.getElementById('airport_vuelofinal');
+
+    check_conexion.addEventListener('change', set_conexion)
+    aerolinia_inicial.addEventListener('change', select_airline)
+    aerolinia_final.addEventListener('change', select_airline)
+    vuelo_inicial.addEventListener('change', select_airport)
+    vuelo_final.addEventListener('change', select_airport)
+
+    function set_conexion() {
+        if (this.checked) {
+            div_conexion.style.display = 'block';
+
+        } else {
+            div_conexion.style.display = 'none';
+        }
+
+    }
+
+    async function select_airline(e) {
+        var aerolinia;
+        var vuelo;
+        var option;
+        console.log(e);
+        if (e) {
+            aerolinia = aerolinia_inicial;
+            vuelo = vuelo_inicial;
+        } else {
+            aerolinia = aerolinia_final;
+            vuelvo = vuelo_final;
+        }
+        var airlinecode = aerolinia.value;
+
+        await fetch('http://localhost:3000/get_flights_airline/' + airlinecode)
+            .then((response) => response.json())
+            .then((data) => {
+                var flights_for_airline = data;
+                vuelo.innerHTML = ''
+                option = document.createElement('option')
+                option.disabled = true;
+                option.selected = true;
+                option.textContent = 'Seleccione aerolinia';
+                console.log(option)
+                vuelo.appendChild(option);
+                for (let index = 0; index < flights_for_airline.length; index++) {
+                    //segments.innerHTML+="<h1>puto</h1>"
+                    option = document.createElement('option')
+                    option.value = flights_for_airline[index][0]
+                    option.textContent = flights_for_airline[index][1]
+                    vuelo.appendChild(option);
+                }
+            });
+        console.log(flights_for_airline);
+
+    }
+
+    async function select_airport(e) {
+        var vuelo;
+        var aeropuerto;
+        var option;
+        console.log(e);
+        if (e) {//hacer validacion de select del evento
+            vuelo = aeropuerto_inicial;
+            aeropuerto = aeropuerto_inicial;
+        } else {
+            vuelo = aerolinia_final;
+            aeropuerto = aeropuerto_final;
+        }
+        var flightcode = vuelo.value;
+
+        await fetch('http://localhost:3000/get_airports_flight/' + flightcode)
+            .then((response) => response.json())
+            .then((data) => {
+                var airports_for_flight = data;
+                aeropuerto.innerHTML = ''
+                option = document.createElement('option')
+                option.disabled = true;
+                option.selected = true;
+                option.textContent = 'Seleccione aeropuerto';
+                console.log(option)
+                aeropuerto.appendChild(option);
+                for (let index = 0; index < airports_for_flight.length; index++) {
+                    //segments.innerHTML+="<h1>puto</h1>"
+                    option = document.createElement('option')
+                    option.value = airports_for_flight[index][0]
+                    option.textContent = airports_for_flight[index][1]
+                    aeropuerto.appendChild(option);
+                }
+            });
+        console.log(airports_for_flight);
+
+    }
 </script>
 {% endblock %}

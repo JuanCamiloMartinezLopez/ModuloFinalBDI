@@ -64,10 +64,25 @@ def create_flight():
         airports=get_airports()
         return render_template('create_flight.html',airlines=airlines, airports=airports)
 
+@app.route('/create_connection', methods=['POST'])
+def create_flight():
+    if request.method=='POST':
+
+        print(request.form)
+        flash('Vuelo creado')
+
+        airline_code = request.form['airline']
+        cursor = connection.cursor()
+        sql = """SELECT COUNT(*) FROM FLIGHT WHERE AIRLINECODE LIKE :airline_code"""
+        cursor.execute(sql, [airline_code])
+        data = cursor.fetchone()
+ 
+        return redirect(url_for('show_flight',flight_code=data[0]+1, connection=None))
+
 @app.route('/show_flight/<flight_code>', methods=['GET'])
 def show_flight(flight_code):
     
-    return render_template('show_flight.html',flight_code=flight_code)
+    return render_template('show_flight.html',flight_code=flight_code,connection=None)
 
 @app.route('/get_airlines', methods=['GET'])
 def get_airlines():
@@ -95,6 +110,25 @@ def get_pilots_airline(airline_code):
     data = cursor.fetchall()
     pilots = data
     return pilots
+
+
+@app.route('/get_flights_airline/<airline_code>', methods=['GET'])
+def get_flights_airline(airline_code):
+    cursor = connection.cursor()
+    sql = """SELECT P.PILOTLICENSE, PE.NAME FROM PILOT P, EMPLOYEE E, PERSON PE WHERE P.EMPLOYEENUMBER = E.EMPLOYEENUMBER AND E.IDPERSON = PE.IDPERSON AND P.AIRLINECODE = :airline_code"""
+    cursor.execute(sql, [airline_code])
+    data = cursor.fetchall()
+    flights = data
+    return flights
+
+@app.route('/get_airports_flight/<flight_code>', methods=['GET'])
+def get_airports_flight(flight_code):
+    cursor = connection.cursor()
+    sql = """SELECT P.PILOTLICENSE, PE.NAME FROM PILOT P, EMPLOYEE E, PERSON PE WHERE P.EMPLOYEENUMBER = E.EMPLOYEENUMBER AND E.IDPERSON = PE.IDPERSON AND P.AIRLINECODE = :airline_code"""
+    cursor.execute(sql, [flight_code])
+    data = cursor.fetchall()
+    airports = data
+    return airports
 
 
 
