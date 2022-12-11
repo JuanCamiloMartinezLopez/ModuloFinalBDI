@@ -6,3 +6,5 @@ Para ejecutar el proyecto seguir los siguientes pasos:
     `env\Scripts\activate.bat`
 - installar dependencias:
     `python -m pip install -r .\src\requerimientos.txt`
+- iniciar proyecto:
+    `python .\src\App.py`

@@ -1,0 +1,124 @@
+{% extends 'layout.html' %}
+{% block body %}{% with messages = get_flashed_messages() %}
+{% if messages %}
+{% for message in messages %}
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endfor %}
+{% endif %}
+{% endwith%}
+
+<body>
+    <h1>Creacion de vuelos</h1>
+    <div>
+        <form action="/create_flight" method="POST" name="new_flight">
+            <div>
+                <label for="aeroline">Aerolinia:</label>
+                <select name="aeroline" id="airline">
+                    <option value="" disabled selected>Seleccione aerolinia</option>
+                    {%for aeroline in aerolines%}
+                    <option value="{{aeroline.0}}">{{aeroline.2}}</option>
+                    {%endfor%}
+                </select>
+            </div>
+            <div id="pilots_form">
+                <label for="">Piloto</label>
+                <select name="pilots" id="pilots">
+                    <option value="" disabled selected>Seleccione piloto</option>
+
+                </select>
+            </div>
+            <div>
+                <label for="num_segment">Numero de segmentos:</label>
+                <input type="number" name="num_segment" id="num_segment" value="1" min="1"
+                    placeholder="Numero de segmentos">
+            </div>
+            <div id="segments" name="segments">
+            </div>
+            <button type="submit">enviar</button>
+        </form>
+    </div>
+</body>
+
+<script>
+    //event.preventDefault()
+
+    num_segment = document.getElementById('num_segment')
+    segments = document.getElementById('segments')
+    airline = document.getElementById('airline')
+    pilots = document.getElementById('pilots')
+
+    airline.addEventListener('change', select_airline)
+    num_segment.addEventListener('input', change_num_segments)
+    var num_segm;
+    var airports;
+    var pilots_for_airline;
+    console.log(airline)
+
+    fetch('http://localhost:3000/get_airport')
+        .then((response) => response.json())
+        .then((data) => airports = data);
+
+    function change_num_segments(e) {
+        console.log(airports)
+        segments.innerHTML = ""
+        num_segm = e.target.value;
+        num_segm=parseInt(num_segm)+1;
+        console.log(num_segm)
+
+        for (let index = 0; index < num_segm; index++) {
+
+            //segments.innerHTML+="<h1>puto</h1>"
+            segments.appendChild(create_list_airport(index));
+        }
+    }
+
+    async function select_airline(e) {
+        var airlinecode = airline.value;
+        console.log(airlinecode)
+        await fetch('http://localhost:3000/get_pilots_airline/' + airlinecode)
+            .then((response) => response.json())
+            .then((data) => {
+                pilots_for_airline = data
+                pilots.innerHTML = ''
+                option = document.createElement('option')
+                option.disabled=true;
+                option.selected=true;
+                option.textContent='Seleccione piloto';
+                console.log(option)
+                pilots.appendChild(option);
+                for (let index = 0; index < pilots_for_airline.length; index++) {
+
+                    //segments.innerHTML+="<h1>puto</h1>"
+                    option = document.createElement('option')
+                    option.value = pilots_for_airline[index][0]
+                    option.textContent = pilots_for_airline[index][0]
+                    pilots.appendChild(option);
+                }
+            });
+        console.log(pilots_for_airline);
+
+    }
+
+    function create_list_airport(index) {
+        var div =document.createElement('div')
+        div.name='Aeropuerto '+(index+1);
+        var label=document.createElement('label')
+        label.textContent='Aeropuerto '+(index+1);
+        div.appendChild(label)
+        var select = document.createElement('select')
+        select.name='airpot_'+(index+1)
+        var option;
+        for (let index = 0; index < airports.length; index++) {
+            option = document.createElement('option')
+            option.value = airports[index][0]
+            option.textContent = airports[index][2]
+            select.appendChild(option)
+        }
+        div.appendChild(select)
+        return div
+    }
+</script>
+{% endblock %}
