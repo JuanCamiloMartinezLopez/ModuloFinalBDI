@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      ORACLE Version 12c                           */
-/* Created on:     5/12/2022 9:14:41 p. m.                      */
+/* Created on:     5/12/2022 9:14:41 p.Â m.                      */
 /*==============================================================*/
 
 
@@ -157,7 +157,7 @@ drop table PLACETYPE cascade constraints;
 create table AIRLINE (
    AIRLINECODE          VARCHAR2(3)           not null,
    AIR_AIRLINECODE      VARCHAR2(3),
-   AIRLINENAME          VARCHAR2(30)          not null,
+   AIRLINENAME          VARCHAR2(100)         not null,
    constraint PK_AIRLINE primary key (AIRLINECODE)
 );
 
@@ -174,7 +174,7 @@ create index AIRLINEOPERATOR_FK on AIRLINE (
 create table AIRPORT (
    AIRPORTCODE          VARCHAR2(10)          not null,
    IDPLACE              VARCHAR2(5),
-   AIRPORTNAME          VARCHAR2(30)          not null,
+   AIRPORTNAME          VARCHAR2(100)         not null,
    constraint PK_AIRPORT primary key (AIRPORTCODE)
 );
 
@@ -233,7 +233,6 @@ create table EMPLOYEE (
    AIRLINECODE          VARCHAR2(3)           not null,
    EMPLOYEENUMBER       VARCHAR2(10)          not null,
    IDPERSON             VARCHAR2(5)           not null,
-   PARKINGSPACE         VARCHAR2(10),
    DATEHIRED            DATE                  not null,
    constraint PK_EMPLOYEE primary key (AIRLINECODE, EMPLOYEENUMBER)
 );
@@ -246,12 +245,6 @@ create index PERSONE_FK on EMPLOYEE (
 );
 
 /*==============================================================*/
-/* Index: EMPPLOYEEPARKINGSPACE2_FK                             */
-/*==============================================================*/
-create index EMPPLOYEEPARKINGSPACE2_FK on EMPLOYEE (
-   PARKINGSPACE ASC
-);
-
 /*==============================================================*/
 /* Index: EMPLOYMENT_FK                                         */
 /*==============================================================*/
@@ -398,8 +391,8 @@ create index PERSONP_FK on PASSENGER (
 create table PERSON (
    IDPERSON             VARCHAR2(5)           not null,
    IDPLACE              VARCHAR2(5),
-   NAME                 VARCHAR2(30)          not null,
-   DOB                  VARCHAR2(30),
+   NAME                 VARCHAR2(100)         not null,
+   DOB                  DATE,                 not null,
    constraint PK_PERSON primary key (IDPERSON)
 );
 
@@ -513,10 +506,6 @@ alter table AIRPORTTYPE
 alter table EMPLOYEE
    add constraint FK_EMPLOYEE_EMPLOYMEN_AIRLINE foreign key (AIRLINECODE)
       references AIRLINE (AIRLINECODE);
-
-alter table EMPLOYEE
-   add constraint FK_EMPLOYEE_EMPPLOYEE_PARKINGS foreign key (PARKINGSPACE)
-      references PARKINGSPACE (PARKINGSPACE);
 
 alter table EMPLOYEE
    add constraint FK_EMPLOYEE_PERSONE_PERSON foreign key (IDPERSON)
