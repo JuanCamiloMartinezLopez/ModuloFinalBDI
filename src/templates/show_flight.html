@@ -13,42 +13,80 @@
 <body>
     <h1>Vuelo {{flight_code}}</h1>
 
+    <div>
+        <h2>Información vuelo</h2>
+        <label>Aerolínea: {{info_flight[0]}}</label><br>
+        <label>No. Vuelo: {{info_flight[1]}}</label><br>
+        <label>No. Segmentos: {{info_flight[2]}}</label><br>
+        <label>Aeropuerto: {{info_flight[3]}}</label><br>
+        <label>Piloto: {{info_flight[4]}}</label><br>
+    </div>
+    <br><br>
+    <div>
+        <h3>Segmentos</h3>
+        {% for seg in info_airports %}
+        <label>Vuelo: {{flight}}</label><br>
+        <label>Aerolínea: {{info_flight[0]}}</label><br>
+        <label>Aeropuerto: {{seg[0][4]}}</label><br>
+        <label>Ciudad: {{seg[0][3]}}</label><br>
+        <label>{{seg[0][1]}}: {{seg[0][2]}}</label><br>
+        <label>País: {{seg[0][0]}}</label><br>
+        <label>Piloto: {{info_flight[4]}}</label><br>
+        {% endfor %}
+    </div>
+    <br><br>
     {% if connection %}
-
+        <div>
+            <h3>Conexión</h3>
+            <label>Aerolínea: {{info_con[0][0]}}</label><br>
+            <label>No. Vuelo: {{info_con[0][1]}}</label><br>
+            <label>Aeropuerto: {{info_con[0][2]}}</label><br>
+        </div>
     {% else %}
     <div>
+        <label>¿Desea agregar una conexión?</label>
         <input type="checkbox" name="check_conexion" id="check_conexion">
-        <form action="" method="post">
+        <form action="/create_connection/{{flight_code}}" method="post">
             <div id="div_conexion" style="display: none;">
+                <label for="vueloinicial">Vuelo inicial </label>
                 <div name="vueloinicial">
+                    <label for="airline_vueloinicial">Aerolínea: </label>
                     <select name="airline_vueloinicial" id="airline_vueloinicial">
-                        <option value="" disabled selected>Seleccione aerolinia</option>
+                        <option value="" disabled selected>Seleccione aerolínea</option>
                         {%for airline in airlines%}
                         <option value="{{airline.0}}">{{airline.2}}</option>
                         {%endfor%}
                     </select>
+                    <label for="flight_vueloinicial">Vuelo: </label>
                     <select name="flight_vueloinicial" id="flight_vueloinicial">
                         <option value="" disabled selected>Seleccione vuelo</option>
                     </select>
+                    <label for="airport_vueloinicial">Aeropuerto: </label>
                     <select name="airport_vueloinicial" id="airport_vueloinicial">
                         <option value="" disabled selected>Seleccione aeropuerto</option>
                     </select>
                 </div>
+                <label for="vuelofinal">Vuelo final </label>
                 <div name="vuelofinal">
+                    <label>Aerolínea: </label>
                     <select name="airline_vuelofinal" id="airline_vuelofinal">
-                        <option value="" disabled selected>Seleccione aerolinia</option>
+                        <option value="" disabled selected>Seleccione aerolínea</option>
                         {%for airline in airlines%}
                         <option value="{{airline.0}}">{{airline.2}}</option>
                         {%endfor%}
                     </select>
+                    <label for="flight_vuelofinal">Vuelo: </label>
                     <select name="flight_vuelofinal" id="flight_vuelofinal">
                         <option value="" disabled selected>Seleccione vuelo</option>
                     </select>
+                    <label for="airport_vuelofinal">Aeropuerto: </label>
                     <select name="airport_vuelofinal" id="airport_vuelofinal">
                         <option value="" disabled selected>Seleccione aeropuerto</option>
                     </select>
                 </div>
+                <button id="create_con" type="submit">Crear</button>
             </div>
+            
         </form>
     </div>
     {% endif %}
@@ -57,18 +95,20 @@
 <script>
     check_conexion = document.getElementById('check_conexion')
     div_conexion = document.getElementById('div_conexion')
-    aerolinia_inicial = document.getElementById('airline_vueloinicial');
-    aerolinia_final = document.getElementById('airline_vuelofinal');
+    aerolinia_inicial = document.getElementById('airline_vueloinicial')
+    aerolinia_final = document.getElementById('airline_vuelofinal')
     vuelo_inicial = document.getElementById('flight_vueloinicial')
     vuelo_final = document.getElementById('flight_vuelofinal')
-    aeropuerto_inicial = document.getElementById('airport_vueloinicial');
-    aeropuerto_final = document.getElementById('airport_vuelofinal');
+    aeropuerto_inicial = document.getElementById('airport_vueloinicial')
+    aeropuerto_final = document.getElementById('airport_vuelofinal')
+    create_con = document.getElementById('create_con')
 
     check_conexion.addEventListener('change', set_conexion)
     aerolinia_inicial.addEventListener('change', select_airline)
     aerolinia_final.addEventListener('change', select_airline)
     vuelo_inicial.addEventListener('change', select_airport)
     vuelo_final.addEventListener('change', select_airport)
+    aeropuerto_final.addEventListener('change', validate_airport)
 
     function set_conexion() {
         if (this.checked) {
@@ -85,12 +125,12 @@
         var vuelo;
         var option;
         console.log(e);
-        if (e) {
+        if (e.srcElement==aerolinia_inicial) {
             aerolinia = aerolinia_inicial;
             vuelo = vuelo_inicial;
         } else {
             aerolinia = aerolinia_final;
-            vuelvo = vuelo_final;
+            vuelo = vuelo_final;
         }
         var airlinecode = aerolinia.value;
 
@@ -108,13 +148,11 @@
                 for (let index = 0; index < flights_for_airline.length; index++) {
                     //segments.innerHTML+="<h1>puto</h1>"
                     option = document.createElement('option')
-                    option.value = flights_for_airline[index][0]
-                    option.textContent = flights_for_airline[index][1]
+                    option.value = flights_for_airline[index][0]+'_'+flights_for_airline[index][1]
+                    option.textContent = flights_for_airline[index][0]+flights_for_airline[index][1]
                     vuelo.appendChild(option);
                 }
             });
-        console.log(flights_for_airline);
-
     }
 
     async function select_airport(e) {
@@ -122,16 +160,17 @@
         var aeropuerto;
         var option;
         console.log(e);
-        if (e) {//hacer validacion de select del evento
-            vuelo = aeropuerto_inicial;
+        if (e.srcElement == vuelo_inicial) {//hacer validacion de select del evento
+            vuelo = vuelo_inicial;
             aeropuerto = aeropuerto_inicial;
         } else {
-            vuelo = aerolinia_final;
+            vuelo = vuelo_final;
             aeropuerto = aeropuerto_final;
+            
         }
-        var flightcode = vuelo.value;
+        var flightcode = vuelo.value.split('_');
 
-        await fetch('http://localhost:3000/get_airports_flight/' + flightcode)
+        await fetch('http://localhost:3000/get_airports_flight/'+ flightcode[0] +'/'+ flightcode[1])
             .then((response) => response.json())
             .then((data) => {
                 var airports_for_flight = data;
@@ -145,13 +184,20 @@
                 for (let index = 0; index < airports_for_flight.length; index++) {
                     //segments.innerHTML+="<h1>puto</h1>"
                     option = document.createElement('option')
-                    option.value = airports_for_flight[index][0]
-                    option.textContent = airports_for_flight[index][1]
+                    option.value = airports_for_flight[index][2]
+                    option.textContent = airports_for_flight[index][4]
                     aeropuerto.appendChild(option);
                 }
             });
-        console.log(airports_for_flight);
-
+    }
+    function validate_airport(e){
+        if(aeropuerto_final.value != aeropuerto_inicial.value){
+            alert("Los aeropuertos no coinciden")
+            create_con.disabled = true
+        }
+        else{
+            create_con.disabled = false
+        }
     }
 </script>
 {% endblock %}

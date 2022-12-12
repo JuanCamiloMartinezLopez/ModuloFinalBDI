@@ -1,0 +1,70 @@
+{% extends 'layout.html' %}
+{% block body %}{% with messages = get_flashed_messages() %}
+{% if messages %}
+{% for message in messages %}
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endfor %}
+{% endif %}
+{% endwith%}
+
+<body>
+    <div>
+        <h1>Reporte</h1>
+        <form action="/report" method="POST">
+            <label for="dep_airport">Aeropuerto de salida: </label>
+            <select name="dep_airport" id="dep_airport">
+                <option value="" disabled selected>Seleccione aeropuerto</option>
+                {%for airport in airports%}
+                <option value="{{airport.0}}">{{airport.2}}</option>
+                {%endfor%}
+            </select>
+            <label for="arr_airport">Aeropuerto de llegada: </label>
+            <select name="arr_airport" id="arr_airport">
+                <option value="" disabled selected>Seleccione aeropuerto</option>
+                {%for airport in airports%}
+                <option value="{{airport.0}}">{{airport.2}}</option>
+                {%endfor%}
+            </select>
+            <button type="submit" id="generate_report">Buscar</button>
+        </form>
+    </div>
+    <div>
+        <br>
+        {% for itinerary in itinerary %}
+        <h2>Itinerario {{loop.index}}</h2>
+        <div>
+            <h2>Información vuelo</h2>
+            <label>Aerolínea: {{itinerary[0][0][0]}}</label><br>
+            <label>No. Vuelo: {{itinerary[0][0][1]}}</label><br>
+            <label>No. Segmentos: {{itinerary[0][0][2]}}</label><br>
+            <label>Aeropuerto: {{itinerary[0][0][3]}}</label><br>
+            <label>Piloto: {{itinerary[0][0][4]}}</label><br>
+        </div>
+        <br><br>
+        <div>
+            <h3>Segmentos</h3>
+            {% for seg in itinerary[1] %}
+            <label>Vuelo: {{seg[0]}}</label><br>
+            <label>Aerolínea: {{seg[1]}}</label><br>
+            <label>Aeropuerto: {{itinerary[2][loop.index][0][4]}}</label><br>
+            <label>Ciudad: {{itinerary[2][loop.index][0][3]}}</label><br>
+            <label>{{itinerary[2][loop.index][0][1]}}: {{itinerary[2][loop.index][0][2]}}</label><br>
+            <label>País: {{itinerary[2][loop.index][0][0]}}</label><br>
+            <label>Piloto: {{seg[4]}}</label><br><br>
+            {% endfor %}
+        </div>
+        {% endfor %}
+    </div>
+</body>
+
+<script>
+
+    generate_report = document.getElementById('generate_report')
+    dep_airport = document.getElementById('dep_airport')
+    arr_airport = document.getElementById('arr_airport')
+
+</script>
+{% endblock %}

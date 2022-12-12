@@ -38,7 +38,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="C:\Users\Camilo\Documents\Universidad\2022-3\Bases de datos I\ModuloFinalBDI\env"
+VIRTUAL_ENV="C:\Users\sesov\Desktop\Nueva carpeta\U\BD 1\Módulo 1\ModuloFinalBDI\env"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"
